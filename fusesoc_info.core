@@ -1,0 +1,131 @@
+CAPI=2:
+
+name : AFRL:project:linux:1.0.0
+description: AFRL base for Linux
+
+filesets:
+  zrf8_zu28dr:
+    files:
+      - zrf8_zu28dr/system_constr.xdc : {file_type : xdc}
+      - zrf8_zu28dr/system_wrapper.v : {file_type : verilogSource}
+      - zrf8_zu28dr/system_gen.tcl : {file_type : tclSource}
+    depend:
+      - AFRL:utility:hitech_zrf8_zu28dr_board_base:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+      
+  zrf8_zu28dr_bootgen:
+    depend:
+      - AFRL:utility:hitech_zrf8_zu28dr_boot_gen:1.0.0
+      
+  zcu111:
+    files:
+      - zcu111/system_constr.xdc : {file_type : xdc}
+      - zcu111/system_wrapper.v : {file_type : verilogSource}
+      - zcu111/system_gen.tcl : {file_type : tclSource}
+    depend:
+      - AFRL:utility:xilinx_zcu111_board_base:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+
+  zcu111_bootgen:
+    depend:
+      - AFRL:utility:xilinx_zcu111_boot_gen:1.0.0
+      
+  rfsoc_4x2:
+    files:
+      - rfsoc_4x2/system_constr.xdc : {file_type : xdc}
+      - rfsoc_4x2/system_wrapper.v : {file_type : verilogSource}
+      - rfsoc_4x2/system_gen.tcl : {file_type : tclSource}
+    depend:
+      - AFRL:utility:realdigital_rfsoc_4x2_board_base:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+
+  rfsoc_4x2_bootgen:
+    depend:
+      - AFRL:utility:realdigital_rfsoc_4x2_boot_gen:1.0.0
+      
+  zcu102:
+    files:
+      - zcu102/system_constr.xdc : {file_type : xdc}
+      - zcu102/system_wrapper.v : {file_type : verilogSource}
+      - zcu102/system_gen.tcl : {file_type : tclSource}
+    depend:
+      - AFRL:utility:xilinx_zcu102_board_base:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+      
+  zcu102_bootgen:
+    depend:
+      - AFRL:utility:xilinx_zcu102_boot_gen:1.0.0
+  
+  dep:
+    depend:
+      - AFRL:utility:tcl_helper_check:1.0.0
+
+targets:
+
+  default: &default
+    description: Default target, do not use.
+    filesets: [dep]
+    toplevel: system_wrapper
+
+  zrf8_zu28dr: &zrf8_zu28dr
+    <<: *default
+    default_tool: vivado
+    description: zrf8 zu28dr target.
+    filesets_append : ["tool_vivado ? (zrf8_zu28dr)"]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        part: xczu28dr-ffvg1517-2-e
+
+  zrf8_zu28dr_bootgen:
+    <<: *zrf8_zu28dr
+    description: zrf8_zu28dr build with boot.bin output in BOOTFS folder.
+    filesets_append : [zrf8_zu28dr_bootgen]
+
+  zcu111: &zcu111
+    <<: *default
+    default_tool: vivado
+    description: zcu111 target.
+    filesets_append : ["tool_vivado ? (zcu111)"]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: xilinx.com:zcu111:part0:1.4
+        part: xczu28dr-ffvg1517-2-e
+
+  zcu111_bootgen:
+    <<: *zcu111
+    description: zcu111 build with boot.bin output in BOOTFS folder.
+    filesets_append : [zcu111_bootgen]
+    
+  rfsoc_4x2: &rfsoc_4x2
+    <<: *default
+    default_tool: vivado
+    description: rfsoc_4x2 target.
+    filesets_append : ["tool_vivado ? (rfsoc_4x2)"]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: realdigital.org:rfsoc4x2:part0:1.0
+        part: xczu48dr-ffvg1517-2-e
+
+  rfsoc_4x2_bootgen:
+    <<: *rfsoc_4x2
+    description: rfsoc_4x2 build with boot.bin output in BOOTFS folder.
+    filesets_append : [rfsoc_4x2_bootgen]
+    
+  zcu102: &zcu102
+    <<: *default
+    default_tool: vivado
+    description: zcu102 target.
+    filesets_append : ["tool_vivado ? (zcu102)"]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: xilinx.com:zcu102:part0:3.4
+        part: xczu9eg-ffvb1156-2-e
+
+  zcu102_bootgen:
+    <<: *zcu102
+    description: zcu102 build with boot.bin output in BOOTFS folder.
+    filesets_append : [zcu102_bootgen]
