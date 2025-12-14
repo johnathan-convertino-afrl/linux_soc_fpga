@@ -4,6 +4,10 @@ name : AFRL:project:linux:1.0.0
 description: AFRL base for Linux
 
 filesets:
+  veronica_common:
+    files:
+      - common/system_ps_axi_perf_wrapper.v         : {file_type : verilogSource}
+
   zrf8_zu28dr:
     files:
       - zrf8_zu28dr/system_constr.xdc : {file_type : xdc}
@@ -55,10 +59,96 @@ filesets:
   zcu102_bootgen:
     depend:
       - AFRL:utility:xilinx_zcu102_boot_gen:1.0.0
-  
+      
+  nexys-a7-100t:
+    files:
+      - nexys-a7-100t/system_wrapper.v     : {file_type : verilogSource}
+      - nexys-a7-100t/system_constr.tcl    : {file_type : SDC}
+      - nexys-a7-100t/system_gen_ps.tcl    : {file_type : tclSource}
+      - nexys-a7-100t/system_gen.tcl       : {file_type : tclSource}
+    depend:
+      - AFRL:utility:digilent_nexys-a7-100t_board_base_constr:1.0.0
+      - AFRL:utility:digilent_nexys-a7-100t_board_base_ddr_cfg:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+      
+  nexys-a7-100t_bootgen:
+    depend:
+      - AFRL:utility:digilent_veronica_nexys_boot_gen:1.0.0
+      
+  genesys2:
+    files:
+      - genesys2/system_wrapper.v     : {file_type : verilogSource}
+      - genesys2/system_constr.tcl    : {file_type : SDC}
+      - genesys2/system_gen_ps.tcl    : {file_type : tclSource}
+      - genesys2/system_gen.tcl       : {file_type : tclSource}
+    depend:
+      - AFRL:utility:digilent_genesys2_board_base_constr:1.0.0
+      - AFRL:utility:digilent_genesys2_board_base_ddr_cfg:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+      
+  genesys2_bootgen:
+    depend:
+      - AFRL:utility:digilent_veronica_genesys2_boot_gen:1.0.0
+      
+  NetFPGA-1G-CML:
+    files:
+      - NetFPGA-1G-CML/system_wrapper.v     : {file_type : verilogSource}
+      - NetFPGA-1G-CML/system_constr.tcl    : {file_type : SDC}
+      - NetFPGA-1G-CML/system_gen_ps.tcl    : {file_type : tclSource}
+      - NetFPGA-1G-CML/system_gen.tcl       : {file_type : tclSource}
+    depend:
+      - AFRL:utility:digilent_NetFPGA-1G-CML_board_base_constr:1.0.0
+      - AFRL:utility:digilent_NetFPGA-1G-CML_board_base_ddr_cfg:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+      
+  NetFPGA-1G-CML_bootgen:
+    depend:
+      - AFRL:utility:digilent_veronica_NetFPGA-1G-CML_boot_gen:1.0.0
+      
+  KC705:
+    files:
+      - KC705/system_wrapper.v     : {file_type : verilogSource}
+      - KC705/system_constr.tcl    : {file_type : SDC}
+      - KC705/system_gen_ps.tcl    : {file_type : tclSource}
+      - KC705/system_gen.tcl       : {file_type : tclSource}
+    depend:
+      - AFRL:utility:xilinx_kc705_board_base_constr:1.0.0
+      - AFRL:utility:xilinx_kc705_board_base_ddr_cfg:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+      
+  KC705_bootgen:
+    depend:
+      - AFRL:utility:xilinx_veronica_kc705_boot_gen:1.0.0
+      
+  VC707:
+    files:
+      - VC707/system_wrapper.v     : {file_type : verilogSource}
+      - VC707/system_constr.tcl    : {file_type : SDC}
+      - VC707/system_gen_ps.tcl    : {file_type : tclSource}
+      - VC707/system_gen.tcl       : {file_type : tclSource}
+    depend:
+      - AFRL:utility:xilinx_vc707_board_base_constr:1.0.0
+      - AFRL:utility:xilinx_vc707_board_base_ddr_cfg:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+      
+  VC707_bootgen:
+    depend:
+      - AFRL:utility:xilinx_veronica_vc707_boot_gen:1.0.0
+
   dep:
     depend:
+      - AFRL:utility:helper:1.0.0
       - AFRL:utility:tcl_helper_check:1.0.0
+      - AFRL:device:axi_lite_spi_master:1.0.0
+      - AFRL:device:axi_lite_uart_lite:1.0.0
+      - AFRL:device:axi_lite_gpio:1.0.0
+      - AFRL:bus:axi_lite_otm:1.0.0
+      
+  dep_linux_jtag_bscane:
+    files:
+      - common/system_ps_wrapper.v         : {file_type : verilogSource}
+    depend:
+      - spinalhdl:cpu:veronica_linux_jtag_xilinx_bscane:1.0.0
 
 targets:
 
@@ -129,3 +219,83 @@ targets:
     <<: *zcu102
     description: zcu102 build with boot.bin output in BOOTFS folder.
     filesets_append : [zcu102_bootgen]
+    
+  nexys-a7-100t_riscv_veronica: &nexys-a7-100t_riscv_veronica
+    <<: *default
+    description: Build for nexys-a7-100t digilent development board with Linux Veronica RISCV.
+    default_tool: vivado
+    filesets_append : [veronica_common, nexys-a7-100t, dep_linux_jtag_bscane]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: digilentinc.com:nexys-a7-100t:part0:1.2
+        part: xc7a100tcsg324-1
+    
+  nexys-a7-100t_riscv_veronica_bootgen:
+    <<: *nexys-a7-100t_riscv_veronica
+    description: Build for nexys-a7-100t digilent development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [nexys-a7-100t_bootgen]
+    
+  genesys2_riscv_veronica: &genesys2_riscv_veronica
+    <<: *default
+    description: Build for genesys2 digilent development board with Linux Veronica RISCV.
+    default_tool: vivado
+    filesets_append : [veronica_common, genesys2, dep_linux_jtag_bscane]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: digilentinc.com:genesys2:part0:1.1
+        part: xc7k325tffg900-2
+
+  genesys2_riscv_veronica_bootgen:
+    <<: *genesys2_riscv_veronica
+    description: Build for genesys2 digilent development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [genesys2_bootgen]
+    
+  NetFPGA-1G-CML_riscv_veronica: &NetFPGA-1G-CML_riscv_veronica
+    <<: *default
+    description: Base for NetFPGA-1G-CML digilent development board builds, do not use.
+    default_tool: vivado
+    filesets_append : [veronica_common, NetFPGA-1G-CML, dep_linux_jtag_bscane]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: digilentinc.com:netfpga-1g-cml:part0:0.1
+        part: xc7k325tffg676-1
+    
+  NetFPGA-1G-CML_riscv_veronica_bootgen:
+    <<: *NetFPGA-1G-CML_riscv_veronica
+    description: Build for NetFPGA-1G-CML development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [NetFPGA-1G-CML_bootgen]
+    
+  kc705_riscv_veronica: &kc705_riscv_veronica
+    <<: *default
+    description: Base for kc705 xilinx development board builds, do not use.
+    default_tool: vivado
+    filesets_append : [veronica_common, KC705, dep_linux_jtag_bscane]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: xilinx.com:kc705:part0:1.6
+        part: xc7k325tffg900-2
+    
+  kc705_riscv_veronica_bootgen:
+    <<: *kc705_riscv_veronica
+    description: Build for KC705 development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [KC705_bootgen]
+    
+  vc707_riscv_veronica: &vc707_riscv_veronica
+    <<: *default
+    description: Base for VC707 xilinx development board builds, do not use.
+    default_tool: vivado
+    filesets_append : [veronica_common, VC707, dep_linux_jtag_bscane]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: xilinx.com:vc707:part0:1.4
+        part: xc7vx485tffg1761-2
+    
+  vc707_riscv_veronica_bootgen:
+    <<: *vc707_riscv_veronica
+    description: Build for vc707 development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [VC707_bootgen]
