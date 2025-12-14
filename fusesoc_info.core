@@ -7,7 +7,12 @@ filesets:
   veronica_common:
     files:
       - common/system_ps_axi_perf_wrapper.v         : {file_type : verilogSource}
-
+    depend:
+      - AFRL:device:axi_lite_spi_master:1.0.0
+      - AFRL:device:axi_lite_uart_lite:1.0.0
+      - AFRL:device:axi_lite_gpio:1.0.0
+      - AFRL:bus:axi_lite_otm:1.0.0
+      
   zrf8_zu28dr:
     files:
       - zrf8_zu28dr/system_constr.xdc : {file_type : xdc}
@@ -139,10 +144,6 @@ filesets:
     depend:
       - AFRL:utility:helper:1.0.0
       - AFRL:utility:tcl_helper_check:1.0.0
-      - AFRL:device:axi_lite_spi_master:1.0.0
-      - AFRL:device:axi_lite_uart_lite:1.0.0
-      - AFRL:device:axi_lite_gpio:1.0.0
-      - AFRL:bus:axi_lite_otm:1.0.0
       
   dep_linux_jtag_bscane:
     files:
